@@ -7,5 +7,8 @@
     "start": "node main.js"
   },
   "author": "Richie Casto",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "rpio": "^0.9.16"
+  }
 }
