@@ -1,20 +1,28 @@
-var config = require('./config.json');
 var helpers = require('./helpers');
 var events = require('events');
 var rpio = helpers.getRpio();
 
-function init() {
-    var eventEmitter = new events.EventEmitter();
+class MotionSensorEmitter extends events.EventEmitter {
+    constructor(pin) {
+        super();
 
-    rpio.open(config.motionSensorPin, rpio.INPUT, rpio.PULL_UP);
-    rpio.poll(config.motionSensorPin, readSensor, rpio.POLL_BOTH);
+        this.pin = pin;
+        this.state = null;
 
-    eventEmitter.emit('state', rpio.HIGH);
-
-    return eventEmitter;
+        rpio.open(pin, rpio.INPUT, rpio.PULL_UP);
+        rpio.poll(pin, this.readChange, rpio.POLL_BOTH);
+    }
+    readChange() {
+        var currentState = this.read();
+        if (currentState !== this.state) {
+            this.emit('state', this.state = currentState);
+        }
+    }
+    read() {
+        return rpio.read(this.pin);
+    }
 }
 
-function readSensor(pin) {
-}
-
-module.exports = init;
+module.exports = function (pin) {
+    return new MotionSensorEmitter(pin);
+};

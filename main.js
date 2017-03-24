@@ -1,5 +1,7 @@
-var motionSensor = require('./motionSensor')();
 var config = require('./config');
+var motionSensor = require('./motionSensor')(config.motionSensorPin);
+var helpers = require('./helpers');
+var rpio = helpers.getRpio();
 
 motionSensor.on('state', (state) => {
     console.log(state);
