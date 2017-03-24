@@ -2,7 +2,8 @@ var helpers = require('./helpers');
 var events = require('events');
 var rpio = helpers.getRpio(process.platform);
 
-var blockTimeoutTimeInMs = 5000; // 5 seconds
+var initializationTimeoutInMs = 60000; // 1 minute
+var blockTimeoutTimeInMs = 60000; // 1 minute
 
 class MotionSensorEmitter extends events.EventEmitter {
     constructor(pin) {
@@ -21,7 +22,7 @@ class MotionSensorEmitter extends events.EventEmitter {
             this.emit('ready');
             this.readChange();
             rpio.poll(pin, () => this.handlePinUpdate());
-        }, 60 * 1000);
+        }, initializationTimeoutInMs);
 
         process.on('exit', () => this.cleanup());
         process.on('SIGINT', () => this.cleanup());
