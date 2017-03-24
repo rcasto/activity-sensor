@@ -28,7 +28,7 @@ class MotionSensorEmitter extends events.EventEmitter {
 
         var currentState = this.read();
         if (currentState !== this.state) {
-            console.log(`State changed from ${currentState} to ${this.state}`);
+            console.log(`State changed from ${this.state} to ${currentState}`);
             this.emit('state', this.state = currentState);
         }
     }

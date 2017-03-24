@@ -1,4 +1,4 @@
 {
-    "motionSensorPin": 3,
-    "outputPin": 5
+    "motionSensorPin": 24,
+    "outputPin": 26
 }
