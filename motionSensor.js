@@ -10,7 +10,13 @@ class MotionSensorEmitter extends events.EventEmitter {
         this.state = null;
 
         rpio.open(pin, rpio.INPUT, rpio.PULL_UP);
-        rpio.poll(pin, this.readChange, rpio.POLL_BOTH);
+
+        // Don't start polling for a minute, this is about how long it takes
+        // for the motion sensor to boot up
+        setTimeout(() => {
+            this.emit('ready');
+            rpio.poll(pin, () => this.readChange(), rpio.POLL_BOTH);
+        }, 60 * 1000);
 
         process.on('exit', () => this.cleanup());
         process.on('SIGINT', () => this.cleanup());

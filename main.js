@@ -4,13 +4,15 @@ var helpers = require('./helpers');
 var rpio = helpers.getRpio(process.platform);
 
 function init() {
+    console.log(`Initializing activity monitor`);
+    
     rpio.open(config.outputPin, rpio.OUTPUT, rpio.HIGH);
 
     motionSensor.on('state', (state) => {
-        console.log(state);
+        console.log(`State Update: ${state}`);
         rpio.write(config.outputPin, state);
     });
-    motionSensor.on('error', (err) => console.error(err));
+    motionSensor.on('error', (err) => console.error(`Error occurred: ${err}`));
 
     process.on('exit', cleanup);
     process.on('SIGINT', cleanup);
