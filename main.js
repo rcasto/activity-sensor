@@ -1,11 +1,10 @@
 var config = require('./config');
 var motionSensor = require('./motionSensor')(config.motionSensorPin);
 var helpers = require('./helpers');
-var rpio = helpers.getRpio();
+var rpio = helpers.getRpio(process.platform);
 
 function init() {
     rpio.open(config.outputPin, rpio.OUTPUT, rpio.HIGH);
-    // rpio.poll(config.outputPin, () => console.log('test'));
 
     motionSensor.on('state', (state) => {
         console.log(state);

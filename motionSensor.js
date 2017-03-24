@@ -1,6 +1,6 @@
 var helpers = require('./helpers');
 var events = require('events');
-var rpio = helpers.getRpio();
+var rpio = helpers.getRpio(process.platform);
 
 class MotionSensorEmitter extends events.EventEmitter {
     constructor(pin) {
