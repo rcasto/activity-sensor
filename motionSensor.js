@@ -12,8 +12,8 @@ class MotionSensorEmitter extends events.EventEmitter {
         rpio.open(pin, rpio.INPUT, rpio.PULL_UP);
         rpio.poll(pin, this.readChange, rpio.POLL_BOTH);
 
-        process.on('exit', this.cleanup);
-        process.on('SIGINT', this.cleanup);
+        process.on('exit', () => this.cleanup());
+        process.on('SIGINT', () => this.cleanup());
     }
     readChange() {
         var currentState = this.read();
