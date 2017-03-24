@@ -20,7 +20,7 @@ class MotionSensorEmitter extends events.EventEmitter {
         this.initializationTimeoutId = setTimeout(() => {
             console.log('Motion sensor ready');
             this.emit('ready');
-            this.readChange();
+            this.handlePinUpdate(); // do initial read
             rpio.poll(pin, () => this.handlePinUpdate());
         }, initializationTimeoutInMs);
 
