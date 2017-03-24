@@ -16,7 +16,7 @@ class MotionSensorEmitter extends events.EventEmitter {
 
         // Don't start polling for a minute, this is about how long it takes
         // for the motion sensor to boot up
-        setTimeout(() => {
+        this.initializationTimeoutId = setTimeout(() => {
             console.log('Motion sensor ready');
             this.emit('ready');
             this.readChange();
@@ -43,19 +43,12 @@ class MotionSensorEmitter extends events.EventEmitter {
             }
         }
     }
-    readChange() {
-        console.log('Reading motion sensor for change');
-
-        var currentState = this.read();
-        if (currentState !== this.state) {
-            console.log(`State changed from ${this.state} to ${currentState}`);
-            this.emit('state', this.state = currentState);
-        }
-    }
     read() {
         return rpio.read(this.pin);
     }
     cleanup() {
+        clearTimeout(this.initializationTimeoutId);
+        clearTimeout(this.blockTimeoutId);
         rpio.close(this.pin, rpio.PIN_PRESERVE);
         this.eventNames().forEach(
             (eventName) => this.removeAllListeners(eventName));
