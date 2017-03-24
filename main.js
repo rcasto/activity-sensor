@@ -4,11 +4,12 @@ var helpers = require('./helpers');
 var rpio = helpers.getRpio();
 
 function init() {
-    rpio.open(config.outputPin, rpio.OUTPUT, rpio.HIGH);
+    rpio.open(config.outputPin, rpio.INPUT, rpio.HIGH);
+    rpio.poll(config.outputPin, () => console.log('test'));
 
     motionSensor.on('state', (state) => {
         console.log(state);
-        rpio.write(config.outputPin, state);
+        // rpio.write(config.outputPin, state);
     });
     motionSensor.on('error', (err) => console.error(err));
 
