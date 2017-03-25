@@ -19,6 +19,8 @@ function init(pin) {
 
     // Light sensor activity
     // lightSensor.on('state', activityMonitor);
+    lightSensor.on('state', 
+        (numTicks) => console.log(`Light sensor: ${numTicks} ticks`));
     lightSensor.on('error', onError);
 
     process.on('exit', cleanup);
