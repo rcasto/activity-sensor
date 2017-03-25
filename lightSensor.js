@@ -24,8 +24,7 @@ class LightSensorEmitter extends events.EventEmitter {
         analog.readRC(this.analogPin, analogTimeoutTimeInMs)
             .then((numTicks) => {
                 this.emit('state', numTicks);
-            })
-            .catch(() => {
+            }, () => {
                 console.error(`Failed to read analog pin ${this.analogPin} go HIGH 
                     within ${analogTimeoutTimeInMs}ms`);
             });
