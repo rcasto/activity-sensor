@@ -3,7 +3,6 @@ var events = require('events');
 var rpio = helpers.getRpio(process.platform);
 
 var initializationTimeoutInMs = 60000; // 1 minute
-var blockTimeoutTimeInMs = 60000; // 1 minute
 
 class MotionSensorEmitter extends events.EventEmitter {
     constructor(pin) {

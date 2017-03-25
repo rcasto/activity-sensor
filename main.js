@@ -4,13 +4,11 @@ var helpers = require('./helpers');
 var rpio = helpers.getRpio(process.platform);
 
 var activityTimeoutId = null;
-var activityTimeoutInMs = 5 * 60 * 1000; // 5 mins
-var activityState = rpio.HIGH;
+var activityState = config.initialState > 0 ? rpio.HIGH : rpio.LOW;
 
 function init(pin) {
     console.log(`Initializing activity monitor`);
     
-    // initialize with output high
     rpio.open(config.outputPin, rpio.OUTPUT, activityState);
 
     // Motion sensor activity
@@ -27,13 +25,17 @@ function activityMonitor(state) {
         console.log(`Activity detected, staying ${ state === rpio.HIGH ? 'on' : 'off' }`);
         return resetActivityTimer();
     }
+    /*
+        Want to ensure inactivity has occurred for a certain amount of time before shutting off
+        Whenever activity is detected this inactivity timer is restarted 
+    */
     if (state === rpio.LOW) {
         console.log('Inactivity timer started');
         activityTimeoutId = activityTimeoutId || setTimeout(() => {
-            console.log(`Inactivity for ${activityTimeoutInMs}ms, turning off`);
+            console.log(`Inactivity for ${config.activityTimeoutInMs}ms, turning off`);
             resetActivityTimer();
             rpio.write(config.outputPin, activityState = rpio.LOW);
-        }, activityTimeoutInMs);
+        }, config.activityTimeoutInMs);
     } else {
         console.log('Activity detected, turning on');
         resetActivityTimer();
