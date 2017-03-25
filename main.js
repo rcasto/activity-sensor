@@ -27,17 +27,18 @@ function activityMonitor(state) {
         console.log(`Activity detected, staying ${ state === rpio.HIGH ? 'on' : 'off' }`);
         return resetActivityTimer();
     }
-    if (state === rpio.LOW) {
-        activityTimeoutId = activityTimeoutId || setTimeout(() => {
-            console.log(`Inactivity for ${activityTimeoutInMs}ms, turning off`);
-            resetActivityTimer();
-            rpio.write(config.outputPin, activityState = rpio.LOW);
-        }, activityTimeoutInMs);
-    } else {
-        console.log('Activity detected, turning on');
-        resetActivityTimer();
-        rpio.write(config.outputPin, activityState = rpio.HIGH);
-    }
+    // if (state === rpio.LOW) {
+    //     console.log('Inactivity timer started');
+    //     activityTimeoutId = activityTimeoutId || setTimeout(() => {
+    //         console.log(`Inactivity for ${activityTimeoutInMs}ms, turning off`);
+    //         resetActivityTimer();
+    //         rpio.write(config.outputPin, activityState = rpio.LOW);
+    //     }, activityTimeoutInMs);
+    // } else {
+    //     console.log('Activity detected, turning on');
+    //     resetActivityTimer();
+    //     rpio.write(config.outputPin, activityState = rpio.HIGH);
+    // }
 }
 
 function resetActivityTimer() {
