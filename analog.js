@@ -11,7 +11,6 @@ function readRC(analogPin, timeBeforeTimeoutInMs = 3000, timeToDischargeInMs = 5
         dischargeCapacitor(analogPin, timeToDischargeInMs);
         // start charging it back up, counting ticks
         console.log('Recharging capacitor');
-        rpio.mode(analogPin, rpio.INPUT);
         while(rpio.read(analogPin) === rpio.LOW) {
             numTicks++;
         }
@@ -25,6 +24,7 @@ function dischargeCapacitor(analogPin, timeToDischargeInMs = 500) {
     rpio.write(analogPin, rpio.LOW);
     rpio.mode(analogPin, rpio.OUTPUT);
     rpio.msleep(timeToDischargeInMs);
+    rpio.mode(analogPin, rpio.INPUT);
 }
 
 module.exports = {
