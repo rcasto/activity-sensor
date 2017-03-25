@@ -47,13 +47,14 @@ class MotionSensorEmitter extends events.EventEmitter {
     readAndEmit() {
         var state = this.read();
         this.emit('state', state);
-        readRC()
+        this.readRC()
             .then((numTicks) => console.log(`Analog reading: ${numTicks}`));
         return state;
     }
     cleanup() {
         clearTimeout(this.initializationTimeoutId);
         rpio.close(this.pin, rpio.PIN_PRESERVE);
+        rpio.close(analogPin);
         this.eventNames().forEach(
             (eventName) => this.removeAllListeners(eventName));
     }
