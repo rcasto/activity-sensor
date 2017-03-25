@@ -9,47 +9,29 @@ class MotionSensorEmitter extends events.EventEmitter {
     constructor(pin) {
         super();
 
-        this.pin = pin;
-        this.state = null;
-        this.blockTimeoutId = null;
-
-        rpio.open(pin, rpio.INPUT);
+        rpio.open(this.pin = pin, rpio.INPUT);
 
         // Don't start polling for a minute, this is about how long it takes
         // for the motion sensor to boot up
         this.initializationTimeoutId = setTimeout(() => {
-            console.log('Motion sensor ready');
             this.emit('ready');
-            this.handlePinUpdate(); // do initial read
-            rpio.poll(pin, () => this.handlePinUpdate());
+            this.readAndEmit(); // initial reading
+            rpio.poll(pin, () => this.readAndEmit());
         }, initializationTimeoutInMs);
 
         process.on('exit', () => this.cleanup());
         process.on('SIGINT', () => this.cleanup());
     }
-    handlePinUpdate() {
-        var currentState = this.read();
-        if (this.state !== currentState) {
-            if (currentState === rpio.LOW) {
-                console.log('Starting block timer, but keeping signal active');
-                this.blockTimeoutId = this.blockTimeoutId || setTimeout(() => {
-                    console.log('Block timer over, signal output now low');
-                    this.emit('state', this.state = rpio.LOW);
-                }, blockTimeoutTimeInMs);
-            } else {
-                console.log('Signal output high');
-                clearTimeout(this.blockTimeoutId);
-                this.blockTimeoutId = null;
-                this.emit('state', this.state = rpio.HIGH);
-            }
-        }
-    }
     read() {
         return rpio.read(this.pin);
     }
+    readAndEmit() {
+        var state = this.read();
+        this.emit('state', state);
+        return state;
+    }
     cleanup() {
         clearTimeout(this.initializationTimeoutId);
-        clearTimeout(this.blockTimeoutId);
         rpio.close(this.pin, rpio.PIN_PRESERVE);
         this.eventNames().forEach(
             (eventName) => this.removeAllListeners(eventName));
