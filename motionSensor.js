@@ -21,29 +21,6 @@ class MotionSensorEmitter extends events.EventEmitter {
         process.on('exit', () => this.cleanup());
         process.on('SIGINT', () => this.cleanup());
     }
-    // readRC() {
-    //     console.log('Reading analog');
-    //     var readAnalogPromise = new Promise((resolve) => {
-    //         var numTicks = 0;
-    //         // discharge the capacitor
-    //         console.log('Discharging capacitor');
-    //         rpio.write(analogPin, rpio.LOW);
-    //         rpio.mode(analogPin, rpio.OUTPUT);
-    //         rpio.msleep(500);
-    //         // start charging it back up, counting ticks
-    //         console.log('Recharging capacitor');
-    //         rpio.mode(analogPin, rpio.INPUT);
-    //         while(rpio.read(analogPin) === rpio.LOW) {
-    //             numTicks++;
-    //         }
-    //         resolve(numTicks);
-    //     });
-    //     var analogTimeoutPromise = new Promise((resolve, reject) => {
-    //         setTimeout(() => {
-    //             reject();
-    //         }, 5000); // timeout after 5 seconds
-    //     });
-    // }
     read() {
         return rpio.read(this.pin);
     }
@@ -60,6 +37,4 @@ class MotionSensorEmitter extends events.EventEmitter {
     }
 }
 
-module.exports = function (pin) {
-    return new MotionSensorEmitter(pin);
-};
+module.exports = (pin) => new MotionSensorEmitter(pin);

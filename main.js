@@ -1,5 +1,6 @@
 var config = require('./config');
 var motionSensor = require('./motionSensor')(config.motionSensorPin);
+var lightSensor = require('./lightSensor')(config.lightSensorDigitalPin, config.lightSensorAnalogPin);
 var helpers = require('./helpers');
 var rpio = helpers.getRpio(process.platform);
 
@@ -15,6 +16,10 @@ function init(pin) {
     motionSensor.on('ready', () => console.log('Motion sensor is now ready'));
     motionSensor.on('state', activityMonitor);
     motionSensor.on('error', onError);
+
+    // Light sensor activity
+    // lightSensor.on('state', activityMonitor);
+    lightSensor.on('error', onError);
 
     process.on('exit', cleanup);
     process.on('SIGINT', cleanup);

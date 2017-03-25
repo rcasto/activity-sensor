@@ -1,8 +1,9 @@
 var linuxRegex = /^lin/;
 var rpioMock = {
     read: (pin) => {
-        console.log(`Read from pin ${pin}`);
-        return Math.random() >= 0.5 ? rpio.HIGH : rpio.LOW; 
+        var value = Math.random() >= 0.5 ? this.HIGH : this.LOW;
+        console.log(`Read ${getVoltageString(value)} from pin ${pin}`);
+        return value; 
     },
     write: (pin, voltage) => {
         console.log(`Wrote ${getVoltageString(voltage)} to pin ${pin}`);
@@ -20,13 +21,14 @@ var rpioMock = {
         console.log(`Polling pin ${pin}`);
         this.pollHandle = handle;
         if (this.pollHandle) {
-            setTimeout(() => this.pollHandle, 1000);
+            setTimeout(() => this.pollHandle, 5000);
         }
     },
     pollHandle: null,
     HIGH: 1,
     LOW: 0,
-    OUTPUT: 'output'
+    OUTPUT: 'output',
+    INPUT: 'input'
 };
 
 function getVoltageString(voltage) {
