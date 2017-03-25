@@ -11,7 +11,8 @@ function init(pin) {
     console.log(`Initializing activity monitor`);
     
     // initialize with output high
-    rpio.open(config.outputPin, rpio.OUTPUT, activityState);
+    // rpio.open(config.outputPin, rpio.OUTPUT, activityState);
+    rpio.open(config.outputPin, rpio.OUTPUT, rpio.LOW);
 
     // Motion sensor activity
     motionSensor.on('ready', () => console.log('Motion sensor is now ready'));
