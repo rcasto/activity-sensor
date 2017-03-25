@@ -12,7 +12,7 @@ class LightSensorEmitter extends events.EventEmitter {
         rpio.open(this.digitalPin = digitalPin, rpio.INPUT);
         rpio.open(this.analogPin = analogPin, rpio.INPUT);
         analog.dischargeCapacitor(this.analogPin);
-        rpio.poll(this.digitalPin, () => this.readDigital(), rpio.POLL_HIGH);
+        rpio.poll(this.digitalPin, () => this.readAnalog(), rpio.POLL_HIGH);
 
         process.on('exit', () => this.cleanup());
         process.on('SIGINT', () => this.cleanup());

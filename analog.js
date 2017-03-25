@@ -11,10 +11,14 @@ function readRC(analogPin, timeBeforeTimeoutInMs = 3000, timeToDischargeInMs = 5
         dischargeCapacitor(analogPin, timeToDischargeInMs);
         // start charging it back up, counting ticks
         console.log('Recharging capacitor');
-        while(rpio.read(analogPin) === rpio.LOW) {
-            numTicks++;
-        }
-        resolve(numTicks);
+        (function analogLoop() {
+            if (rpio.read(analogPin) === rpio.LOW) {
+                numTicks++;
+                setTimeout(analogLoop);
+            } else {
+                resolve(numTicks);
+            }
+        }());
     });
     var analogTimeoutPromise = timeoutPromise(timeBeforeTimeoutInMs, false);
     return Promise.race([analogReadPromise, analogTimeoutPromise]);
