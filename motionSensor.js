@@ -27,13 +27,16 @@ class MotionSensorEmitter extends events.EventEmitter {
         process.on('SIGINT', () => this.cleanup());
     }
     readRC() {
+        console.log('Reading analog');
         return new Promise((resolve) => {
             var numTicks = 0;
             // discharge the capacitor
+            console.log('Discharging capacitor');
             rpio.write(analogPin, rpio.LOW);
             rpio.mode(analogPin, rpio.OUTPUT);
             rpio.msleep(500);
             // start charging it back up, counting ticks
+            console.log('Recharging capacitor');
             rpio.mode(analogPin, rpio.INPUT);
             while(rpio.read(analogPin) === rpio.LOW) {
                 numTicks++;
@@ -47,8 +50,10 @@ class MotionSensorEmitter extends events.EventEmitter {
     readAndEmit() {
         var state = this.read();
         this.emit('state', state);
-        this.readRC()
-            .then((numTicks) => console.log(`Analog reading: ${numTicks}`));
+        if (state === rpio.HIGH) {
+            this.readRC()
+                .then((numTicks) => console.log(`Analog reading: ${numTicks}`));
+        }
         return state;
     }
     cleanup() {
