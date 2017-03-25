@@ -1,6 +1,6 @@
 var helpers = require('./helpers');
 var events = require('events');
-var analogRead = require('./analogRead');
+var analog = require('./analog');
 var rpio = helpers.getRpio(process.platform);
 
 var analogTimeoutTimeInMs = 5000; // 5 seconds
@@ -11,29 +11,24 @@ class LightSensorEmitter extends events.EventEmitter {
 
         rpio.open(this.digitalPin = digitalPin, rpio.INPUT);
         rpio.open(this.analogPin = analogPin, rpio.INPUT);
-        rpio.poll(this.digitalPin, () => this.readAndEmit());
-
-        this.readAndEmit(); // initial reading
+        analog.dischargeCapacitor(this.analogPin);
+        rpio.poll(this.digitalPin, () => this.readAnalog(), rpio.POLL_HIGH);
 
         process.on('exit', () => this.cleanup());
         process.on('SIGINT', () => this.cleanup());
     }
-    read() {
-        return rpio.read(this.digitalPin);
+    readDigital() {
+        this.emit('state', rpio.read(this.digitalPin));
     }
-    readAndEmit() {
-        var state = this.read();
-        if (state === rpio.HIGH) {
-            analogRead.readRC(this.analogPin, analogTimeoutTimeInMs)
-                .then((numTicks) => {
-                    this.emit('state', numTicks);
-                })
-                .catch(() => {
-                    console.error(`Failed to read analog pin ${this.analogPin} go HIGH 
-                        within ${analogTimeoutTimeInMs}ms`);
-                });
-        }
-        return state;
+    readAnalog() {
+        analog.readRC(this.analogPin, analogTimeoutTimeInMs)
+            .then((numTicks) => {
+                this.emit('state', numTicks);
+            })
+            .catch(() => {
+                console.error(`Failed to read analog pin ${this.analogPin} go HIGH 
+                    within ${analogTimeoutTimeInMs}ms`);
+            });
     }
     cleanup() {
         rpio.close(this.digitalPin);

@@ -2,15 +2,13 @@ var helpers = require('./helpers');
 var timeoutPromise = require('./timeoutPromise');
 var rpio = helpers.getRpio(process.platform);
 
-function readRC(analogPin, timeBeforeTimeoutInMs = 3000) {
+function readRC(analogPin, timeBeforeTimeoutInMs = 3000, timeToDischargeInMs = 500) {
     console.log('Reading analog');
     var analogReadPromise = new Promise((resolve) => {
         var numTicks = 0;
         // discharge the capacitor first
         console.log('Discharging capacitor');
-        rpio.write(analogPin, rpio.LOW);
-        rpio.mode(analogPin, rpio.OUTPUT);
-        rpio.msleep(500); // Make sure it discharges completely
+        dischargeCapacitor(analogPin, timeToDischargeInMs);
         // start charging it back up, counting ticks
         console.log('Recharging capacitor');
         rpio.mode(analogPin, rpio.INPUT);
@@ -23,6 +21,13 @@ function readRC(analogPin, timeBeforeTimeoutInMs = 3000) {
     return Promise.race(analogReadPromise, analogTimeoutPromise);
 }
 
+function dischargeCapacitor(analogPin, timeToDischargeInMs = 500) {
+    rpio.write(analogPin, rpio.LOW);
+    rpio.mode(analogPin, rpio.OUTPUT);
+    rpio.msleep(timeToDischargeInMs);
+}
+
 module.exports = {
-    readRC
+    readRC,
+    dischargeCapacitor
 };
