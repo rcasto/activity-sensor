@@ -18,7 +18,7 @@ function readRC(analogPin, timeBeforeTimeoutInMs = 3000, timeToDischargeInMs = 5
         resolve(numTicks);
     });
     var analogTimeoutPromise = timeoutPromise(timeBeforeTimeoutInMs, false);
-    return Promise.race(analogReadPromise, analogTimeoutPromise);
+    return Promise.race([analogReadPromise, analogTimeoutPromise]);
 }
 
 function dischargeCapacitor(analogPin, timeToDischargeInMs = 500) {
