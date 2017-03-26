@@ -64,7 +64,8 @@ function setActivity(type, state = rpio.LOW) {
 
 function isAnyActivity() {
     return Object.keys(activityMap)
-        .some((sensorType) => activityMap[sensorType].state === rpio.HIGH);
+        .some((sensorType) => activityMap[sensorType].state === rpio.HIGH ||
+                              activityMap[sensorType].timeoutId);
 }
 
 function onError(error) {
