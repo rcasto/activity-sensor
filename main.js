@@ -1,7 +1,7 @@
 var config = require('./config');
-var motionSensor = require('./motionSensor')(config.motionSensorPin);
-var lightSensor = require('./lightSensor')(config.lightSensorPin);
-var helpers = require('./helpers');
+var motionSensor = require('./sensorEmitters/motionSensor')(config.motionSensorPin);
+var lightSensor = require('./sensorEmitters/lightSensor')(config.lightSensorPin);
+var helpers = require('./lib/helpers');
 var rpio = helpers.getRpio(process.platform);
 
 var activityTimeoutId = null;

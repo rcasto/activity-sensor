@@ -1,4 +1,4 @@
-var helpers = require('./helpers');
+var helpers = require('../lib/helpers');
 var events = require('events');
 var rpio = helpers.getRpio(process.platform);
 
