@@ -8,7 +8,7 @@ class MotionSensorEmitter extends events.EventEmitter {
     constructor(pin) {
         super();
 
-        rpio.open(this.pin = pin, rpio.INPUT);
+        rpio.open(this.pin = pin, rpio.INPUT, rpio.PULL_DOWN);
 
         // Don't start polling for a minute, this is about how long it takes
         // for the motion sensor to boot up

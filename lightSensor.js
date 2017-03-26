@@ -6,14 +6,19 @@ class LightSensorEmitter extends events.EventEmitter {
     constructor(pin) {
         super();
 
-        rpio.open(this.pin = pin, rpio.INPUT);
-        rpio.poll(this.pin, () => this.readDigital());
+        rpio.open(this.pin = pin, rpio.INPUT, rpio.PULL_DOWN);
+        rpio.poll(this.pin, () => this.readAndEmit());
 
         process.on('exit', () => this.cleanup());
         process.on('SIGINT', () => this.cleanup());
     }
-    readDigital() {
-        this.emit('state', rpio.read(this.pin));
+    read() {
+        return rpio.read(this.pin);
+    }
+    readAndEmit() {
+        var state = this.read();
+        this.emit('state', state);
+        return state;
     }
     cleanup() {
         rpio.close(this.pin);
