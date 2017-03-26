@@ -34,9 +34,10 @@ function activityMonitor(event) {
     */
     if (event.state === rpio.LOW) {
         activityMap[event.type].timeoutId = setTimeout(() => {
-            console.log(`Inactivity for ${config.activityTimeoutInMs}ms, turning off`);
+            console.log(`${event.type} inactive for ${config.activityTimeoutInMs}ms`);
             setActivity(event.type);
             if (!isAnyActivity()) {
+                console.log(`All system components inactive, turning off`);
                 rpio.write(config.outputPin, activityState = rpio.LOW);
             }
         }, config.activityTimeoutInMs);
