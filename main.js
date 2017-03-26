@@ -18,9 +18,9 @@ function init(pin) {
     motionSensor.on('error', onError);
 
     // Light sensor activity
-    // lightSensor.on('state', activityMonitor);
-    lightSensor.on('state', 
-        (numTicks) => console.log(`Light sensor: ${numTicks} ticks`));
+    lightSensor.on('state', activityMonitor);
+    // lightSensor.on('state', 
+    //     (numTicks) => console.log(`Light sensor: ${numTicks} ticks`));
     lightSensor.on('error', onError);
 
     process.on('exit', cleanup);
@@ -36,16 +36,16 @@ function activityMonitor(state) {
         Want to ensure inactivity has occurred for a certain amount of time before shutting off
         Whenever activity is detected this inactivity timer is restarted 
     */
+    resetActivityTimer();
     if (state === rpio.LOW) {
         console.log('Inactivity timer started');
-        activityTimeoutId = activityTimeoutId || setTimeout(() => {
+        activityTimeoutId = setTimeout(() => {
             console.log(`Inactivity for ${config.activityTimeoutInMs}ms, turning off`);
             resetActivityTimer();
             rpio.write(config.outputPin, activityState = rpio.LOW);
         }, config.activityTimeoutInMs);
     } else {
         console.log('Activity detected, turning on');
-        resetActivityTimer();
         rpio.write(config.outputPin, activityState = rpio.HIGH);
     }
 }
