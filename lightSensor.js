@@ -18,6 +18,7 @@ class LightSensorEmitter extends events.EventEmitter {
         return rpio.read(this.pin);
     }
     readAndEmit() {
+        console.log('Emitting light state');
         var state = this.read();
         this.emit('state', {
             state: state,
