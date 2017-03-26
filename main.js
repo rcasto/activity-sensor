@@ -53,7 +53,9 @@ function resetActivity() {
 }
 
 function setActivity(type, state = rpio.LOW) {
-    clearTimeout(activityMap[type].timeoutId);
+    if (activityMap[type]) {
+        clearTimeout(activityMap[type].timeoutId);
+    }
     return (activityMap[type] = {
         timeoutId: null,
         state: state
