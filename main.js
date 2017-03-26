@@ -79,7 +79,7 @@ function onError(error) {
 
 function cleanup() {
     resetActivity();
-    rpio.close(config.outputPin, rpio.PIN_PRESERVE);
+    rpio.close(config.outputPin);
 }
 
 init();
