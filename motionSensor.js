@@ -26,6 +26,7 @@ class MotionSensorEmitter extends events.EventEmitter {
         return rpio.read(this.pin);
     }
     readAndEmit() {
+        console.log('Reading and emitting motion sensor');
         var state = this.read();
         this.emit('state', state);
         return state;
