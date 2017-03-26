@@ -1,6 +1,5 @@
 {
-    "lightSensorDigitalPin": 21,
-    "lightSensorAnalogPin": 23,
+    "lightSensorPin": 21,
     "motionSensorPin": 24,
     "outputPin": 26,
     "activityTimeoutInMs": 300000,

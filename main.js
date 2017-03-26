@@ -1,6 +1,6 @@
 var config = require('./config');
 var motionSensor = require('./motionSensor')(config.motionSensorPin);
-var lightSensor = require('./lightSensor')(config.lightSensorDigitalPin, config.lightSensorAnalogPin);
+var lightSensor = require('./lightSensor')(config.lightSensorPin);
 var helpers = require('./helpers');
 var rpio = helpers.getRpio(process.platform);
 
