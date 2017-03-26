@@ -4,7 +4,7 @@ var lightSensor = require('./sensorEmitters/lightSensor')(config.lightSensorPin)
 var helpers = require('./lib/helpers');
 var rpio = helpers.getRpio(process.platform);
 
-var activityTimeoutId = null;
+var activityMap = {};
 var activityState = config.initialState > 0 ? rpio.HIGH : rpio.LOW;
 
 function init() {
@@ -27,16 +27,18 @@ function init() {
 
 function activityMonitor(event) {
     console.log(`${event.type} reported ${event.state === rpio.HIGH ? 'activity' : 'inactivity'}`);
-    resetActivityTimer();
+    setActivity(event.type, event.state);
     /*
         Want to ensure inactivity has occurred for a certain amount of time before shutting off
         Whenever activity is detected this inactivity timer is restarted 
     */
     if (event.state === rpio.LOW) {
-        activityTimeoutId = setTimeout(() => {
+        activityMap[event.type].timeoutId = setTimeout(() => {
             console.log(`Inactivity for ${config.activityTimeoutInMs}ms, turning off`);
-            resetActivityTimer();
-            rpio.write(config.outputPin, activityState = rpio.LOW);
+            setActivity(event.type);
+            if (!isAnyActivity()) {
+                rpio.write(config.outputPin, activityState = rpio.LOW);
+            }
         }, config.activityTimeoutInMs);
     }
     if (activityState === rpio.LOW) {
@@ -44,9 +46,22 @@ function activityMonitor(event) {
     }
 }
 
-function resetActivityTimer() {
-    clearTimeout(activityTimeoutId);
-    activityTimeoutId = null;
+function resetActivity() {
+    Object.keys(activityMap)
+        .forEach((sensorType) => setActivity(sensorType));
+}
+
+function setActivity(type, state = rpio.LOW) {
+    clearTimeout(activityMap[type].timeoutId);
+    return (activityMap[type] = {
+        timeoutId: null,
+        state: state
+    });
+}
+
+function isAnyActivity() {
+    return Object.keys(activityMap)
+        .some((sensorType) => activityMap[sensorType].state === rpio.HIGH);
 }
 
 function onError(error) {
@@ -54,7 +69,7 @@ function onError(error) {
 }
 
 function cleanup() {
-    resetActivityTimer();
+    resetActivity();
     rpio.close(config.outputPin, rpio.PIN_PRESERVE);
 }
 
