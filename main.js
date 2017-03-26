@@ -7,7 +7,7 @@ var rpio = helpers.getRpio(process.platform);
 var activityTimeoutId = null;
 var activityState = config.initialState > 0 ? rpio.HIGH : rpio.LOW;
 
-function init(pin) {
+function init() {
     console.log(`Initializing activity monitor`);
     
     rpio.open(config.outputPin, rpio.OUTPUT, activityState);
