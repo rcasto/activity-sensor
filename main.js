@@ -25,25 +25,23 @@ function init() {
     process.on('SIGINT', cleanup);
 }
 
-function activityMonitor(state) {
+function activityMonitor(event) {
+    console.log(`${event.type} reported ${event.state === rpio.HIGH ? 'activity' : 'inactivity'}`);
     resetActivityTimer();
-    if (activityState === state) {
-        console.log(`Activity detected, staying ${ state === rpio.HIGH ? 'on' : 'off' }`);
+    if (activityState === event.state) {
         return;
     }
     /*
         Want to ensure inactivity has occurred for a certain amount of time before shutting off
         Whenever activity is detected this inactivity timer is restarted 
     */
-    if (state === rpio.LOW) {
-        console.log('Inactivity timer started');
+    if (event.state === rpio.LOW) {
         activityTimeoutId = setTimeout(() => {
             console.log(`Inactivity for ${config.activityTimeoutInMs}ms, turning off`);
             resetActivityTimer();
             rpio.write(config.outputPin, activityState = rpio.LOW);
         }, config.activityTimeoutInMs);
     } else {
-        console.log('Activity detected, turning on');
         rpio.write(config.outputPin, activityState = rpio.HIGH);
     }
 }

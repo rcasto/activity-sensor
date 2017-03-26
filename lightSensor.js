@@ -9,7 +9,6 @@ class LightSensorEmitter extends events.EventEmitter {
         rpio.open(this.pin = pin, rpio.INPUT, rpio.PULL_DOWN);
         rpio.poll(this.pin, () => this.readAndEmit());
 
-        console.log('Do initial light sensor reading');
         this.readAndEmit(); // initial reading
 
         process.on('exit', () => this.cleanup());
@@ -19,9 +18,11 @@ class LightSensorEmitter extends events.EventEmitter {
         return rpio.read(this.pin);
     }
     readAndEmit() {
-        console.log('Reading and emitting light sensor');
         var state = this.read();
-        this.emit('state', state);
+        this.emit('state', {
+            state: state,
+            type: 'light'
+        });
         return state;
     }
     cleanup() {
