@@ -28,9 +28,6 @@ function init() {
 function activityMonitor(event) {
     console.log(`${event.type} reported ${event.state === rpio.HIGH ? 'activity' : 'inactivity'}`);
     resetActivityTimer();
-    if (activityState === event.state) {
-        return;
-    }
     /*
         Want to ensure inactivity has occurred for a certain amount of time before shutting off
         Whenever activity is detected this inactivity timer is restarted 
@@ -41,7 +38,8 @@ function activityMonitor(event) {
             resetActivityTimer();
             rpio.write(config.outputPin, activityState = rpio.LOW);
         }, config.activityTimeoutInMs);
-    } else {
+    }
+    if (activityState === rpio.LOW) {
         rpio.write(config.outputPin, activityState = rpio.HIGH);
     }
 }
