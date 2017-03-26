@@ -26,15 +26,15 @@ function init(pin) {
 }
 
 function activityMonitor(state) {
+    resetActivityTimer();
     if (activityState === state) {
         console.log(`Activity detected, staying ${ state === rpio.HIGH ? 'on' : 'off' }`);
-        return resetActivityTimer();
+        return;
     }
     /*
         Want to ensure inactivity has occurred for a certain amount of time before shutting off
         Whenever activity is detected this inactivity timer is restarted 
     */
-    resetActivityTimer();
     if (state === rpio.LOW) {
         console.log('Inactivity timer started');
         activityTimeoutId = setTimeout(() => {
