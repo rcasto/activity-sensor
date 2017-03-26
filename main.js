@@ -21,6 +21,10 @@ function init() {
     lightSensor.on('state', activityMonitor);
     lightSensor.on('error', onError);
 
+    /* Read light sensor initially, the motion sensor takes time
+       to boot up and will report when ready */
+    lightSensor.readAndEmit();
+
     process.on('exit', cleanup);
     process.on('SIGINT', cleanup);
 }
@@ -29,8 +33,9 @@ function activityMonitor(event) {
     console.log(`${event.type} reported ${event.state === rpio.HIGH ? 'activity' : 'inactivity'}`);
     setActivity(event.type, event.state);
     /*
-        Want to ensure inactivity has occurred for a certain amount of time before shutting off
-        Whenever activity is detected this inactivity timer is restarted 
+        When the timer for one sensor reports an inactive period for the specified time, it does not
+        mean the system turns off immediately.  Other sensor reports are checked for activity, if there is
+        any the system stays.  Only once all sensors report inactivity will the system shut off
     */
     if (event.state === rpio.LOW) {
         activityMap[event.type].timeoutId = setTimeout(() => {
