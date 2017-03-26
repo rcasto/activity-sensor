@@ -31,10 +31,10 @@ class MotionSensorEmitter extends events.EventEmitter {
         return state;
     }
     cleanup() {
-        clearTimeout(this.initializationTimeoutId);
-        rpio.close(this.pin);
         this.eventNames().forEach(
             (eventName) => this.removeAllListeners(eventName));
+        clearTimeout(this.initializationTimeoutId);
+        rpio.close(this.pin);
     }
 }
 

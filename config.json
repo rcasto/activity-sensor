@@ -1,5 +1,5 @@
 {
-    "lightSensorPin": 21,
+    "lightSensorPin": 23,
     "motionSensorPin": 24,
     "outputPin": 26,
     "activityTimeoutInMs": 300000,

@@ -23,9 +23,9 @@ class LightSensorEmitter extends events.EventEmitter {
         return state;
     }
     cleanup() {
-        rpio.close(this.pin);
         this.eventNames().forEach(
             (eventName) => this.removeAllListeners(eventName));
+        rpio.close(this.pin);
     }
 }
 
