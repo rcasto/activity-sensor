@@ -1,19 +1,19 @@
 var config = require('./config');
+var helpers = require('./lib/helpers');
 var motionSensor = require('./sensorEmitters/motionSensor')(config.motionSensorPin);
 var lightSensor = require('./sensorEmitters/lightSensor')(config.lightSensorPin);
-var helpers = require('./lib/helpers');
 var rpio = helpers.getRpio(process.platform);
 
 var activityMap = {};
 var activityState = config.initialState > 0 ? rpio.HIGH : rpio.LOW;
 
 function init() {
-    console.log(`Initializing activity monitor`);
+    helpers.log(`Initializing activity monitor`);
     
     rpio.open(config.outputPin, rpio.OUTPUT, activityState);
 
     // Motion sensor activity
-    motionSensor.on('ready', () => console.log('Motion sensor is now ready'));
+    motionSensor.on('ready', () => helpers.log('Motion sensor is now ready'));
     motionSensor.on('state', activityMonitor);
     motionSensor.on('error', onError);
 
@@ -30,7 +30,7 @@ function init() {
 }
 
 function activityMonitor(event) {
-    console.log(`${event.type} reported ${event.state === rpio.HIGH ? 'activity' : 'inactivity'}`);
+    helpers.log(`${event.type} reported ${event.state === rpio.HIGH ? 'activity' : 'inactivity'}`);
     setActivity(event.type, event.state);
     /*
         When the timer for one sensor reports an inactive period for the specified time, it does not
@@ -39,10 +39,10 @@ function activityMonitor(event) {
     */
     if (event.state === rpio.LOW) {
         activityMap[event.type].timeoutId = setTimeout(() => {
-            console.log(`${event.type} inactive for ${config.activityTimeoutInMs}ms`);
+            helpers.log(`${event.type} inactive for ${config.activityTimeoutInMs}ms`);
             setActivity(event.type);
             if (!isAnyActivity()) {
-                console.log(`All system components inactive, turning off`);
+                helpers.log(`All system components inactive, turning off`);
                 rpio.write(config.outputPin, activityState = rpio.LOW);
             }
         }, config.activityTimeoutInMs);
