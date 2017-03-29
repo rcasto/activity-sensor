@@ -3,7 +3,6 @@ var helpers = require('./lib/helpers');
 var motionSensor = require('./sensorEmitters/motionSensor')(config.motionSensorPin);
 var lightSensor = require('./sensorEmitters/lightSensor')(config.lightSensorPin);
 var rpio = helpers.getRpio(process.platform);
-var fs = require('fs');
 
 var activityMap = {};
 var activityState = config.initialState > 0 ? rpio.HIGH : rpio.LOW;
@@ -26,7 +25,7 @@ function init() {
        to boot up and will report when ready */
     lightSensor.readAndEmit();
 
-    process.on('exit', () => cleanup(true));
+    process.on('exit', cleanup);
     process.on('SIGINT', cleanup);
 }
 
@@ -78,14 +77,7 @@ function onError(error) {
     console.error(`Error occurred: ${error}`);
 }
 
-function cleanup(fromClose = false) {
-    if (fromClose) {
-        let fileStream = fs.createWriteStream('logs.txt', {
-            flags: 'a'
-        });
-        fileStream.write(helpers.createLogStream());
-        fileStream.close();
-    }
+function cleanup() {
     resetActivity();
     rpio.close(config.outputPin);
 }
