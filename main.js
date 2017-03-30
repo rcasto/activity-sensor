@@ -60,6 +60,7 @@ function resetActivity() {
         .forEach((sensorType) => {
             clearActivityDebounce(sensorType);
             clearInactivityDebounce(sensorType);
+            activityMap[sensorType].state = rpio.LOW;
         });
 }
 
