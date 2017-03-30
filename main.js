@@ -34,6 +34,7 @@ function activityMonitor(event) {
     clearActivityDebounce(event.type);
     activity.activityDebounce = setTimeout(() => {
         helpers.log(`${event.type} reported ${event.state === rpio.HIGH ? 'activity' : 'inactivity'}`);
+        clearDebounces(event.type);
         /*
             When the timer for one sensor reports an inactive period for the specified time, it does not
             mean the system turns off immediately.  Other sensor reports are checked for activity, if there is
@@ -55,21 +56,34 @@ function activityMonitor(event) {
     }, config.logDebounceTimeoutInMs);
 }
 
-function resetActivity() {
-    Object.keys(activityMap)
-        .forEach((sensorType) => {
-            clearActivityDebounce(sensorType);
-            clearInactivityDebounce(sensorType);
-            activityMap[sensorType].state = rpio.LOW;
-        });
-}
-
-function getActivity(type) {
-    return activityMap[type] || (activityMap[type] = {
+function createActivity() {
+    return {
         inactivityDebounce: null,
         activityDebounce: null,
         state: rpio.LOW
-    });
+    };
+}
+
+function resetActivity(type) {
+    if (type) {
+        clearDebounces(type);
+        activityMap[sensorType] = createActivity();
+    } else {
+        Object.keys(activityMap)
+            .forEach((sensorType) => {
+                clearDebounces(sensorType);
+                activityMap[sensorType] = createActivity();
+            });
+    }
+}
+
+function getActivity(type) {
+    return activityMap[type] || (activityMap[type] = createActivity());
+}
+
+function clearDebounces(type) {
+    clearActivityDebounce(type);
+    clearInactivityDebounce(type);
 }
 
 function clearActivityDebounce(type) {
@@ -89,7 +103,8 @@ function clearInactivityDebounce(type) {
 function isAnyActivity() {
     return Object.keys(activityMap)
         .some((sensorType) => activityMap[sensorType].state === rpio.HIGH ||
-                              activityMap[sensorType].timeoutId);
+                              !!activityMap[sensorType].activityDebounce ||
+                              !!activityMap[sensorType].inactivityDebounce);
 }
 
 function onError(error) {
