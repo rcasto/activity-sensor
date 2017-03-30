@@ -3,5 +3,6 @@
     "motionSensorPin": 21,
     "outputPin": 26,
     "activityTimeoutInMs": 60000,
+    "logDebounceTimeoutInMs": 1000,
     "initialState": 1
 }

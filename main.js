@@ -30,41 +30,59 @@ function init() {
 }
 
 function activityMonitor(event) {
-    helpers.log(`${event.type} reported ${event.state === rpio.HIGH ? 'activity' : 'inactivity'}`);
-    setActivity(event.type, event.state);
-    /*
-        When the timer for one sensor reports an inactive period for the specified time, it does not
-        mean the system turns off immediately.  Other sensor reports are checked for activity, if there is
-        any the system stays.  Only once all sensors report inactivity will the system shut off
-    */
-    if (event.state === rpio.LOW) {
-        activityMap[event.type].timeoutId = setTimeout(() => {
-            helpers.log(`${event.type} inactive for ${config.activityTimeoutInMs}ms`);
-            setActivity(event.type);
-            if (!isAnyActivity()) {
-                helpers.log(`All system components inactive, turning off`);
-                rpio.write(config.outputPin, activityState = rpio.LOW);
-            }
-        }, config.activityTimeoutInMs);
-    }
-    if (activityState === rpio.LOW) {
-        rpio.write(config.outputPin, activityState = rpio.HIGH);
-    }
+    var activity = getActivity(event.type);
+    clearActivityDebounce(event.type);
+    activity.activityDebounce = setTimeout(() => {
+        helpers.log(`${event.type} reported ${event.state === rpio.HIGH ? 'activity' : 'inactivity'}`);
+        /*
+            When the timer for one sensor reports an inactive period for the specified time, it does not
+            mean the system turns off immediately.  Other sensor reports are checked for activity, if there is
+            any the system stays.  Only once all sensors report inactivity will the system shut off
+        */
+        if (event.state === rpio.LOW) {
+            activity.inactivityDebounce = setTimeout(() => {
+                helpers.log(`${event.type} inactive for ${config.activityTimeoutInMs}ms`);
+                clearInactivityDebounce(event.type);
+                if (!isAnyActivity()) {
+                    helpers.log(`All system components inactive, turning off`);
+                    rpio.write(config.outputPin, activityState = rpio.LOW);
+                }
+            }, config.activityTimeoutInMs);
+        }
+        if (activityState === rpio.LOW) {
+            rpio.write(config.outputPin, activityState = rpio.HIGH);
+        }
+    }, config.logDebounceTimeoutInMs);
 }
 
 function resetActivity() {
     Object.keys(activityMap)
-        .forEach((sensorType) => setActivity(sensorType));
+        .forEach((sensorType) => {
+            clearActivityDebounce(sensorType);
+            clearInactivityDebounce(sensorType);
+        });
 }
 
-function setActivity(type, state = rpio.LOW) {
-    if (activityMap[type]) {
-        clearTimeout(activityMap[type].timeoutId);
-    }
-    return (activityMap[type] = {
-        timeoutId: null,
-        state: state
+function getActivity(type) {
+    return activityMap[type] || (activityMap[type] = {
+        inactivityDebounce: null,
+        activityDebounce: null,
+        state: rpio.LOW
     });
+}
+
+function clearActivityDebounce(type) {
+    if (activityMap[type]) {
+        clearTimeout(activityMap[type].activityDebounce);
+        activityMap[type].activityDebounce = null;
+    }
+}
+
+function clearInactivityDebounce(type) {
+    if (activityMap[type]) {
+        clearTimeout(activityMap[type].inactivityDebounce);
+        activityMap[type].inactivityDebounce = null;
+    }
 }
 
 function isAnyActivity() {
