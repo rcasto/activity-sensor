@@ -32,6 +32,7 @@ function init() {
 function activityMonitor(event) {
     var activity = getActivity(event.type);
     clearActivityDebounce(event.type);
+    activity.state = event.state;
     activity.activityDebounce = setTimeout(() => {
         helpers.log(`${event.type} reported ${event.state === rpio.HIGH ? 'activity' : 'inactivity'}`);
         clearDebounces(event.type);
