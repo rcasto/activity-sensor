@@ -4,10 +4,20 @@ var motionSensor = require('./sensorEmitters/motionSensor')(config.motionSensorP
 var lightSensor = require('./sensorEmitters/lightSensor')(config.lightSensorPin);
 var rpio = helpers.getRpio(process.platform);
 
-var messenger = require('messenger');
-
 var activityMap = {};
 var activityState = config.initialState > 0 ? rpio.HIGH : rpio.LOW;
+
+/* Messenger Communication - Start */
+var connectionUrl = `${config.remoteProtocol}://${config.remoteHost}:${config.remotePort}`;
+var messengerClient = require('messenger').client;
+var socket = null;
+messengerClient.connect(connectionUrl, (data, flags) => {
+    console.log(`Message: ${data} : ${flags}`);
+}).then((_socket) => {
+    console.log(`Socket connection established`);
+    socket = _socket;
+}, onError);
+/* Messenger Communication - End */
 
 function init() {
     helpers.log(`Initializing activity monitor`);
@@ -37,6 +47,17 @@ function activityMonitor(event) {
     activity.state = event.state;
     activity.activityDebounce = setTimeout(() => {
         helpers.log(`${event.type} reported ${event.state === rpio.HIGH ? 'activity' : 'inactivity'}`);
+        /* Messenger integration
+         * Report activity to boss if connected
+         */ 
+        socket && socket.send(JSON.stringify({
+            source: 'activity-sensor',
+            data: {
+                type: event.type,
+                state: event.state
+            }
+        }));
+        /* End */
         clearDebounces(event.type);
         /*
             When the timer for one sensor reports an inactive period for the specified time, it does not

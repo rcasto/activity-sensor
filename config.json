@@ -5,5 +5,8 @@
     "initializationTimeoutInMs": 60000,
     "activityTimeoutInMs": 5000,
     "logDebounceTimeoutInMs": 1000,
-    "initialState": 1
+    "initialState": 1,
+    "remoteProtocol": "ws",
+    "remoteHost": "localhost",
+    "remotePort": 3000 
 }
