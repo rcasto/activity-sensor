@@ -2,7 +2,7 @@
   "name": "motion-sensor",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "start": "node main.js",
     "debug": "node --inspect-brk main.js"
@@ -10,6 +10,7 @@
   "author": "Richie Casto",
   "license": "ISC",
   "dependencies": {
+    "messenger": "file:///C:\\Users\\Richie\\Desktop\\Projects\\Messager",
     "rpio": "^0.9.16"
   }
 }

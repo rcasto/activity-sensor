@@ -4,6 +4,8 @@ var motionSensor = require('./sensorEmitters/motionSensor')(config.motionSensorP
 var lightSensor = require('./sensorEmitters/lightSensor')(config.lightSensorPin);
 var rpio = helpers.getRpio(process.platform);
 
+var messenger = require('messenger');
+
 var activityMap = {};
 var activityState = config.initialState > 0 ? rpio.HIGH : rpio.LOW;
 
