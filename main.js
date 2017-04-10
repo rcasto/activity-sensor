@@ -20,7 +20,7 @@ function init() {
     }, onError);
     
     /* Open and initialize output LED to high */
-    rpio.open(config.outputPin, rpio.OUTPUT, activityState);
+    rpio.open(config.outputPin, rpio.OUTPUT, rpio.HIGH);
 
     // Motion sensor activity
     motionSensor.on('ready', () => helpers.log('Motion sensor is now ready'));
