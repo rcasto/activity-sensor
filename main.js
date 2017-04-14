@@ -12,12 +12,12 @@ function init() {
     helpers.log(`Initializing activity monitor`);
 
     /* Initialize socket connection to server */
-    messengerClient.connect(connectionUrl, (data, flags) => {
-        helpers.log(`Server message: ${data} : ${flags}`);
-    }).then(_socket => {
-        helpers.log(`Socket connection to server established`);
-        socket = _socket;
-    }, onError);
+    // messengerClient.connect(connectionUrl, (data, flags) => {
+    //     helpers.log(`Server message: ${data} : ${flags}`);
+    // }).then(_socket => {
+    //     helpers.log(`Socket connection to server established`);
+    //     socket = _socket;
+    // }, onError);
     
     /* Open and initialize output LED to high */
     rpio.open(config.outputPin, rpio.OUTPUT, rpio.HIGH);
@@ -53,6 +53,7 @@ function onError(error) {
 }
 
 function cleanup() {
+    socket = null;
     rpio.close(config.outputPin);
 }
 
