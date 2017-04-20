@@ -42,7 +42,7 @@ function init() {
 function reportActivity(event) {
     helpers.log(`${event.type} reported ${event.state === rpio.HIGH ? 'activity' : 'inactivity'}`);
     socket && socket.send(JSON.stringify({
-        source: 'activity-sensor',
+        type: 'activity',
         data: event
     }));
     rpio.write(config.outputPin, event.state);
